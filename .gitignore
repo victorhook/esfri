@@ -1,0 +1,7 @@
+main/wifi_creds.h
+main/certs/
+build/
+.vscode/
+.devcontainer/
+sdkconfig*
+Kconfig.*
