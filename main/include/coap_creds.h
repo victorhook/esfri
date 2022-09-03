@@ -1,7 +1,7 @@
 #pragma once
 
-#define COAP_PSK_KEY "LHqKfkh0sTBAbGpW"
-#define COAP_PSK_IDENTITY "xNGrff7peS6Ov"
+#define COAP_PSK_KEY "hbeNfmNaDqpAMG26"
+#define COAP_PSK_IDENTITY "username222233"
 
 /*
 {

@@ -112,23 +112,37 @@ void parse_coap_response(const char* data, const int data_len)
             goto end;
         }
 
+        static tradfri_t next_tradfri;
+        next_tradfri.is_on = is_on->valueint;
+        next_tradfri.brightness = brightness->valueint;
+        next_tradfri.color.r = 254;
+        next_tradfri.color.g = 254;
+        next_tradfri.color.b = 100;
+        next_tradfri.color.r *= (next_tradfri.brightness / 254.0);
+        next_tradfri.color.g *= (next_tradfri.brightness / 254.0);
+        next_tradfri.color.b *= (next_tradfri.brightness / 254.0);
+        bool light_has_changed = memcmp(&tradfri, &next_tradfri, sizeof(tradfri_t)) != 0;
+        memcpy(&tradfri, &next_tradfri, sizeof(tradfri_t));
+
+        /*
         tradfri.is_on = is_on->valueint;
         tradfri.brightness = brightness->valueint;
 
         char led_color[6];
-        get_color(led_color, color->valuestring);
-        tradfri.color.r = hex_to_dec(led_color);
-        tradfri.color.g = hex_to_dec(&led_color[2]);
-        tradfri.color.b = hex_to_dec(&led_color[4]);
-
+        //get_color(led_color, color->valuestring);
+        tradfri.color.r = hex_to_dec(color->valuestring);
+        tradfri.color.g = hex_to_dec(&color->valuestring[2]);
+        tradfri.color.b = hex_to_dec(&color->valuestring[4]);
         adjust_for_brightness(&tradfri.color, tradfri.brightness);
+        */
 
         ESP_LOGI(TAG, "on: %d, brightness: %d, color: %d, %d, %d", tradfri.is_on, tradfri.brightness, tradfri.color.r, tradfri.color.g, tradfri.color.b);
-
+        if (light_has_changed) {
+            update_led_strip();
+        }
     }
 
     end:
         cJSON_Delete(json);   // Must free memory after used.
         ESP_LOGI(TAG, "Heap: %d", esp_get_free_heap_size());
-        update_led_strip();
 }

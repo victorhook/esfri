@@ -39,6 +39,7 @@ void led_init()
     rmt_config_t config = RMT_DEFAULT_CONFIG_TX(LED_GPIO, RMT_TX_CHANNEL);
     // set counter clock to 40MHz
     config.clk_div = 2;
+    config.tx_config.carrier_freq_hz = 1000000;
 
     ESP_ERROR_CHECK(rmt_config(&config));
     ESP_ERROR_CHECK(rmt_driver_install(config.channel, 0, 0));
@@ -68,11 +69,14 @@ void led_init()
 void led_set_color(const color_rgb_t* color)
 {
     if (!is_init) {
-        ESP_LOGE(TAG, "Led drier not started!");
+        ESP_LOGE(TAG, "Led driver not started!");
         return;
     }
 
-    for (int i = 0; i < NBR_OF_LEDS; i++) {
+    // Remember: Pixels are set 3 and 3, so we must divide number of leds with 3.
+    static int pixels = NBR_OF_LEDS / 3;
+
+    for (int i = 0; i < pixels; i++) {
         strip->set_pixel(strip, i, color->r, color->b, color->g);
         strip->refresh(strip, 100);
     }
